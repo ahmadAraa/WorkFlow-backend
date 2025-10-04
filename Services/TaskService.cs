@@ -19,9 +19,9 @@ namespace Services
             
             _dbContext = dbContext; 
         }
-        public void AddTask(TasksVM tasks)
+        public void AddTask(ActivityVM tasks)
         {
-            var task = new Tasks()
+            var task = new Models.Activity()
             {
                 Name = tasks.Name,
                 Description = tasks.Description,
@@ -41,17 +41,17 @@ namespace Services
             _dbContext.SaveChanges();
 
         }
-        public async Task<Tasks?> GetTaskById(int id)
+        public async Task<Activity?> GetTaskById(int id)
         {
             return await _dbContext.tasks.FindAsync(id);
         }
-        public async Task<List<Models.Tasks>> GetAllTasks()
+        public async Task<List<Models.Activity>> GetAllTasks()
         {
            return await _dbContext.tasks.ToListAsync();
             
             
         }
-        public async Task<Models.Tasks> EditTask(int? id,TasksVM tasksVM)
+        public async Task<Models.Activity> EditTask(int? id,ActivityVM tasksVM)
         {
             var task =  _dbContext.tasks.FirstOrDefault(task => task.Id == id);
             if (task is not null) { 

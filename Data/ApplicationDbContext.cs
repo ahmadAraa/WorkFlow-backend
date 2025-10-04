@@ -10,8 +10,10 @@ namespace Data
 {
     public class ApplicationDbContext :DbContext
     {
-       public DbSet<Tasks> tasks {  get; set; }
-        public DbSet<User> users {  get; set; }  
+       public DbSet<Activity> tasks {  get; set; }
+        public DbSet<User> users {  get; set; }
+        public DbSet<Project> projects { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 

@@ -2,8 +2,23 @@ using Business.Services;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Services;
+using Serilog;
+using Microsoft.Extensions.Logging;
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
+
+// Add file logging using a third-party provider like Serilog
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .WriteTo.Console()
+        .WriteTo.File(
+            path: "E:\\logs\\wokflow logs/logs/app.log",
+            rollingInterval: RollingInterval.Day
+        );
+});
 
 // Add services to the container.
 

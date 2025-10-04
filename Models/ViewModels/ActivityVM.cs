@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Models.ViewModels
 {
-    public class TasksVM
+    public class ActivityVM
     {
         public string Name { get; set; }
         public string Description { get; set; }

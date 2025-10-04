@@ -1,6 +1,7 @@
 ﻿using Business.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Models;
 using Models.ViewModels;
 using Services;
@@ -13,15 +14,19 @@ namespace WorkFlow.Controllers
     {
         protected readonly UserService _userService;
         protected readonly JwtService _jwtService;
+        protected readonly ILogger<LoginController> _logger;
 
-public LoginController(UserService userService, JwtService jwtService)
+        public LoginController(UserService userService, JwtService jwtService, ILogger<LoginController> logger)
         {
-            this._jwtService = jwtService;
-            this._userService = userService;    
+            _jwtService = jwtService;
+            _userService = userService;
+            _logger = logger;
         }
 
         [HttpPost("user-signup")]
-        public IActionResult signup([FromBody] UserVM userVM) { 
+        public IActionResult signup([FromBody] UserVM userVM)
+        { 
+            _logger.LogInformation("User signup initiated for email: {Email}", userVM.Email);
             _userService.AddUser(userVM);
             // Retrieve the user via login with the provided credentials
             var userLogin = new UserLoginVM 
@@ -29,20 +34,32 @@ public LoginController(UserService userService, JwtService jwtService)
                 Email = userVM.Email, 
                 Password = userVM.Password 
             };
+            
             var user = _userService.Login(userLogin);
             if(user == null)
+            {
+                _logger.LogWarning("Signup failed during login step for email: {Email}", userVM.Email);
                 return Unauthorized("Signup failed.");
+            }
+            
             string token = _jwtService.CreateToken(user);
+            _logger.LogInformation("User signup successful for email: {Email}", userVM.Email);
             return Ok(new { AccessToken = token });
         }
-        [HttpPost("user-login")]
-        public IActionResult login([FromBody] UserLoginVM userVM) {
-            var user = _userService.Login(userVM);
-            if (user == null) return Unauthorized("Invalid username or password.");
-            string token = _jwtService.CreateToken(user);
-            return Ok(new { AccessToken = token });
-        }
-        
 
+        [HttpPost("user-login")]
+        public IActionResult login([FromBody] UserLoginVM userVM)
+        {
+            _logger.LogInformation("User login attempt for email: {Email}", userVM.Email);
+            var user = _userService.Login(userVM);
+            if (user == null)
+            {
+                _logger.LogWarning("Login failed for email: {Email}", userVM.Email);
+                return Unauthorized("Invalid username or password.");
+            }
+            string token = _jwtService.CreateToken(user);
+            _logger.LogInformation("User login successful for email: {Email}", userVM.Email);
+            return Ok(new { AccessToken = token });
+        }
     }
 }
