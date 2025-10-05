@@ -27,6 +27,7 @@ namespace Services
                 Description = tasks.Description,
                 DueDate = tasks.DueDate,
                 TaskStatus = tasks.TaskStatus,
+                ProjectId = tasks.ProjectId,
                 DateAdded = DateTime.Now
             };
             _dbContext.tasks.Add(task);
@@ -41,6 +42,7 @@ namespace Services
             _dbContext.SaveChanges();
 
         }
+
         public async Task<Activity?> GetTaskById(int id)
         {
             return await _dbContext.tasks.FindAsync(id);
@@ -51,6 +53,21 @@ namespace Services
             
             
         }
+        public async Task<List<Activity>> DeleteAllTaskProject(int? projectId)
+        {
+            
+            var tasks = await _dbContext.tasks
+            .Where(t => t.ProjectId == projectId)
+            .ToListAsync();
+
+            if (tasks.Any())
+            {
+                _dbContext.tasks.RemoveRange(tasks);
+                await _dbContext.SaveChangesAsync();
+            }
+            return tasks;
+
+}
         public async Task<Models.Activity> EditTask(int? id,ActivityVM tasksVM)
         {
             var task =  _dbContext.tasks.FirstOrDefault(task => task.Id == id);
@@ -59,6 +76,7 @@ namespace Services
                 task.Description = tasksVM.Description;
                 task.TaskStatus = tasksVM.TaskStatus;
                 task.DueDate = tasksVM.DueDate;
+
                 
                 _dbContext.SaveChanges();
 

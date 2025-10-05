@@ -17,7 +17,7 @@ namespace Models
         public DateTime DateAdded { get; set; }
         public DateTime? DueDate { get; set; }
 
-       
-        public Project Project { get; set; }    
+        public int ProjectId { get; set; } 
+        public Project Project { get; set; }
     }
 }

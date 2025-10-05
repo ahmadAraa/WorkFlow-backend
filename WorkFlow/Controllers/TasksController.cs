@@ -47,6 +47,11 @@ namespace WorkFlow.Controllers
             }
             return Ok();
         }
+        [HttpDelete("remove-tasks-by-project/{projectId}")]
+        public async Task<IActionResult> RemoveProjectTask(int?projectId) { 
+        var removedTasks =await _tasksService.DeleteAllTaskProject(projectId);
+            return Ok(removeTask);
+        }
 
         [HttpDelete("remove-task/{id}")]
         public IActionResult removeTask(int? id)

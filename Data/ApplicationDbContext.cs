@@ -13,10 +13,18 @@ namespace Data
        public DbSet<Activity> tasks {  get; set; }
         public DbSet<User> users {  get; set; }
         public DbSet<Project> projects { get; set; }
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Activity>()
+                .HasOne(a => a.Project)
+                .WithMany(p => p.Activity)
+                .HasForeignKey(a => a.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
         }
+
     }
 }

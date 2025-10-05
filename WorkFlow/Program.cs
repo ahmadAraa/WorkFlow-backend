@@ -32,8 +32,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(connectionString));
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ProjectService>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSetting"));
 builder.Services.AddScoped<JwtService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(

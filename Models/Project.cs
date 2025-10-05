@@ -11,6 +11,7 @@ namespace Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public ICollection<Activity> Task { get; set; }
+        public DateTime DateCreated { get; set; }
+        public ICollection<Activity> Activity{ get; set; } = new List<Activity>();
     }
 }
