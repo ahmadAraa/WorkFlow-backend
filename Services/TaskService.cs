@@ -47,11 +47,20 @@ namespace Services
         {
             return await _dbContext.tasks.FindAsync(id);
         }
-        public async Task<List<Models.Activity>> GetAllTasks()
+
+        public async Task<List<Models.Activity>> GetAllTasks(int? projectId)
         {
-           return await _dbContext.tasks.ToListAsync();
-            
-            
+
+            if (projectId == null)
+            {
+                return await _dbContext.tasks.ToListAsync();
+            }
+            else
+            {
+                return await _dbContext.tasks
+                    .Where(t => t.ProjectId == projectId.Value) 
+                    .ToListAsync(); 
+            }
         }
         public async Task<List<Activity>> DeleteAllTaskProject(int? projectId)
         {

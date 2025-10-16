@@ -13,5 +13,7 @@ namespace Models
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
         public ICollection<Activity> Activity{ get; set; } = new List<Activity>();
+        public int userId { get; set; }
+        public User User { get; set; }
     }
 }

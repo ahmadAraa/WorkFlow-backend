@@ -24,7 +24,8 @@ namespace Services
             {
                 Name = projectVM.Name,
                 Description = projectVM.Description,
-                DateCreated = DateTime.Now
+                DateCreated = DateTime.Now,
+                userId = projectVM.userId
             };
 
             _dbContext.projects.Add(project);

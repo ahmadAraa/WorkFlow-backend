@@ -112,7 +112,7 @@ namespace WorkFlow.Controllers
         }
 
         [HttpGet("get-all-tasks")]
-        public async Task<IActionResult> GetAllTasks()
+        public async Task<IActionResult> GetAllTasks([FromQuery]int? projectId)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -121,7 +121,7 @@ namespace WorkFlow.Controllers
 
             try
             {
-                var tasks = await _tasksService.GetAllTasks();
+                var tasks = await _tasksService.GetAllTasks(projectId);
                 _logger.LogInformation("{Count} tasks retrieved successfully.", tasks?.Count ?? 0);
                 return Ok(tasks);
             }

@@ -35,7 +35,7 @@ namespace Business.Services
             var claims = new List<Claim>
             {
                 // Use a unique ID for the user
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.userId.ToString()),
                 // Add the unique token ID claim
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
                 // Add the username as a custom claim for convenience

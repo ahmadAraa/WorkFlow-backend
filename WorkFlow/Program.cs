@@ -19,6 +19,26 @@ builder.Host.UseSerilog((context, services, configuration) =>
             rollingInterval: RollingInterval.Day
         );
 });
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<Business.Services.JwtSettings>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Token))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 
 // Add services to the container.
 
@@ -35,6 +55,8 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSetting"));
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddCors(options =>
 {
