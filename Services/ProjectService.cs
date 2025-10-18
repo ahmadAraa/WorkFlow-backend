@@ -18,14 +18,14 @@ namespace Services
         {
             _dbContext = dbContext;
         }
-        public Project AddProject(ProjectVM projectVM)
+        public Project AddProject(ProjectVM projectVM,int id)
         {
             var project = new Project
             {
                 Name = projectVM.Name,
                 Description = projectVM.Description,
                 DateCreated = DateTime.Now,
-                userId = projectVM.userId
+                userId = id
             };
 
             _dbContext.projects.Add(project);

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Models.ViewModels;
 using Services;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace WorkFlow.Controllers
 {
@@ -18,11 +20,21 @@ namespace WorkFlow.Controllers
             
         }
         [HttpPost("add-project")]
-        public IActionResult AddProject([FromBody]ProjectVM projectVM)
+        [Authorize]
+        public IActionResult AddProject([FromBody] ProjectVM projectVM)
         {
-            var project =  _projectService.AddProject(projectVM);
+            var userIdClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("Invalid token: missing user ID.");
+
+            var userId = int.Parse(userIdClaim);
+
+            // pass both the project info and user id to your service
+            var project = _projectService.AddProject(projectVM, userId);
+
             return Ok(project);
         }
+
         [HttpGet("get-all-projects")]
         public async Task<IActionResult> GetAllProjects()
         {

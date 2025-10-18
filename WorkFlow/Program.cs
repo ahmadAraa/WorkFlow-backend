@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Services;
 using Serilog;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +22,7 @@ builder.Host.UseSerilog((context, services, configuration) =>
             rollingInterval: RollingInterval.Day
         );
 });
-var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<Business.Services.JwtSettings>();
+var jwtSettings = builder.Configuration.GetSection("JwtSetting").Get<Business.Services.JwtSettings>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -81,6 +84,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 app.UseCors(MyAllowSpecificOrigins);
