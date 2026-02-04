@@ -53,6 +53,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(connectionString));
+builder.Services.AddScoped(typeof(IRepositoryInterface<>), typeof(Repository<>));
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProjectService>();

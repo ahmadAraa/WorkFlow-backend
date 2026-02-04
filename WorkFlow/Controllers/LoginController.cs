@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Models;
 using Models.ViewModels;
 using Services;
+using System.Threading.Tasks;
 
 namespace WorkFlow.Controllers
 {
@@ -24,7 +25,7 @@ namespace WorkFlow.Controllers
         }
 
         [HttpPost("user-signup")]
-        public IActionResult signup([FromBody] UserVM userVM)
+        public async Task<IActionResult> signup([FromBody] UserVM userVM)
         { 
             _logger.LogInformation("User signup initiated for email: {Email}", userVM.Email);
             _userService.AddUser(userVM);
@@ -35,29 +36,29 @@ namespace WorkFlow.Controllers
                 Password = userVM.Password 
             };
             
-            var user = _userService.Login(userLogin);
+            var user =await _userService.Login(userLogin);
             if(user == null)
             {
                 _logger.LogWarning("Signup failed during login step for email: {Email}", userVM.Email);
                 return Unauthorized("Signup failed.");
             }
             
-            string token = _jwtService.CreateToken(user);
+            string token =_jwtService.CreateToken(user);
             _logger.LogInformation("User signup successful for email: {Email}", userVM.Email);
             return Ok(new { AccessToken = token });
         }
 
         [HttpPost("user-login")]
-        public IActionResult login([FromBody] UserLoginVM userVM)
+        public async Task<IActionResult> login([FromBody] UserLoginVM userVM)
         {
             _logger.LogInformation("User login attempt for email: {Email}", userVM.Email);
-            var user = _userService.Login(userVM);
+            var user =await _userService.Login(userVM);
             if (user == null)
             {
                 _logger.LogWarning("Login failed for email: {Email}", userVM.Email);
                 return Unauthorized("Invalid username or password.");
             }
-            string token = _jwtService.CreateToken(user);
+            string token =  _jwtService.CreateToken(user);
             _logger.LogInformation("User login successful for email: {Email}", userVM.Email);
             return Ok(new { AccessToken = token });
         }

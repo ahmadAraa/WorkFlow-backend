@@ -13,15 +13,15 @@ namespace Services
    
     public class UserService
     {
-    private readonly ApplicationDbContext _dbContext;
+        private readonly IRepositoryInterface<User> _repository;
         private readonly PasswordHasher<User> _hasher = new PasswordHasher<User>();
     
-        public UserService(ApplicationDbContext dbContext)
+        public UserService(IRepositoryInterface<User> repository)
         {
-            this._dbContext = dbContext;    
+            this._repository= repository;    
             
         }
-        public void AddUser(UserVM userVM)
+        public async Task AddUser(UserVM userVM)
         {
             var user = new User()
             {
@@ -29,15 +29,15 @@ namespace Services
                 Email = userVM.Email,
             };
             user.Password = _hasher.HashPassword(user,userVM.Password);
-            _dbContext.users.Add(user);
-            _dbContext.SaveChanges();
+            await _repository.AddAsync(user);
+           await _repository.SaveChangesAsync();
                
         }
-        public User? Login(UserLoginVM loginVM)
+        public async Task<User?> Login(UserLoginVM loginVM)
         {
-            var user = _dbContext.users.FirstOrDefault(u=>u.Email == loginVM.Email);
+            var user = await _repository.GetUserByEmail(loginVM.Email);
             if (user == null) return null;
-            var result = _hasher.VerifyHashedPassword(user, user.Password, loginVM.Password);
+            var result =  _hasher.VerifyHashedPassword(user, user.Password, loginVM.Password);
             if (result == PasswordVerificationResult.Failed) return null;
             return user;
         }

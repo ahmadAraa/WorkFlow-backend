@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models.ViewModels;
 using Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 
 namespace WorkFlow.Controllers
@@ -42,19 +43,19 @@ namespace WorkFlow.Controllers
             return Ok(project);
         }
         [HttpGet("get-project/{id}")]
-        public IActionResult GetProjectById(int?id)
+        public async Task<IActionResult> GetProjectById(int id)
         {
-            _projectService.GetProjectById(id);
+            await _projectService.GetProjectById(id);
             return Ok();
         }
         [HttpPut("edit-project/{id}")]
-        public IActionResult EditProjectById(int?id,ProjectVM projectVM) { 
-            _projectService.EditProject(id,projectVM);
+        public async Task<IActionResult> EditProjectById(int id,ProjectVM projectVM) { 
+          await _projectService.EditProject(id,projectVM);
             return Ok();
         }
         [HttpDelete("remove-project/{id}")]
-        public IActionResult DeleteProjectById(int? id) { 
-        _projectService.DeleteProject(id);
+        public async Task<IActionResult> DeleteProjectById(int id) { 
+      await  _projectService.DeleteProject(id);
             return Ok();    
         }
 

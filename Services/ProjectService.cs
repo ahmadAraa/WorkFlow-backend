@@ -13,52 +13,59 @@ namespace Services
 {
     public class ProjectService
     {
-        protected readonly ApplicationDbContext _dbContext;
-        public ProjectService(ApplicationDbContext dbContext)
+        protected readonly IRepositoryInterface<Project> _projectRepo;
+        public ProjectService(IRepositoryInterface<Project> projectRepo)
         {
-            _dbContext = dbContext;
+            _projectRepo = projectRepo;
         }
-        public Project AddProject(ProjectVM projectVM,int id)
+
+        public async Task<Project> AddProject(ProjectVM projectVM, int userId)
         {
             var project = new Project
             {
                 Name = projectVM.Name,
                 Description = projectVM.Description,
                 DateCreated = DateTime.Now,
-                userId = id
+                userId = userId
             };
 
-            _dbContext.projects.Add(project);
-            _dbContext.SaveChanges();
-
+            await _projectRepo.AddAsync(project);
+            await _projectRepo.SaveChangesAsync();
             return project;
         }
-        public async Task<Project> GetProjectById(int? id)
+
+        public async Task<Project?> GetProjectById(int id)
         {
-            var projects = _dbContext.projects.FirstOrDefaultAsync(projects => projects.Id == id);
-            return await projects;
+            return await _projectRepo.GetByIdAsync(id);
         }
+
         public async Task<List<Project>> GetAllProjects()
         {
-            var projects = _dbContext.projects.ToListAsync();
-            return await projects;
+            var projects = await _projectRepo.GetAllAsync();
+            return projects.ToList();
         }
-       public void EditProject(int? id, ProjectVM projectVM)
+
+        public async Task EditProject(int id, ProjectVM projectVM)
         {
-            var project = _dbContext.projects.FirstOrDefault(x => x.Id == id);
-            if (project is not null) { 
-                project.Name = projectVM.Name;  
-            project.Description = projectVM.Description;
-                _dbContext.SaveChanges();
+            var project = await _projectRepo.GetByIdAsync(id);
+            if (project is not null)
+            {
+                project.Name = projectVM.Name;
+                project.Description = projectVM.Description;
+                await _projectRepo.UpdateAsync(project);
+                await _projectRepo.SaveChangesAsync();
             }
-
-         }
-        public void DeleteProject(int? id) {
-            var project = _dbContext.projects.FirstOrDefault(x => x.Id == id);
-            _dbContext.projects.Remove(project);
-            _dbContext.SaveChanges();
-
         }
-       
+
+        public async Task DeleteProject(int id)
+        {
+            var project = await _projectRepo.GetByIdAsync(id);
+            if (project is not null)
+            {
+                _projectRepo.DeleteAsync(project);
+                await _projectRepo.SaveChangesAsync();
+            }
+        }
+
     }
 }
